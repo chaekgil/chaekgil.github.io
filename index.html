@@ -19,14 +19,17 @@
         const r = await fetch(u, {headers:{apikey:c.supabaseAnonKey, Authorization:'Bearer '+c.supabaseAnonKey}, cache:'no-store'});
         if (!r.ok) throw new Error('CMS content unavailable');
         const rows = await r.json();
-        const html = rows && rows[0] && rows[0].html ? rows[0].html : await fallback();
+        let html = rows && rows[0] && rows[0].html ? rows[0].html : await fallback();
+        if (!/rel=[\"']icon[\"']/.test(html)) html = html.replace(/<head([^>]*)>/i, '<head$1><link rel=\"icon\" type=\"image/png\" href=\"./favicon.png\"><link rel=\"shortcut icon\" href=\"./favicon.ico\">');
         document.open(); document.write(html); document.close();
       } catch (_) {
-        try { const html = await fallback(); document.open(); document.write(html); document.close(); }
+        try { let html = await fallback(); if (!/rel=[\"']icon[\"']/.test(html)) html = html.replace(/<head([^>]*)>/i, '<head$1><link rel=\"icon\" type=\"image/png\" href=\"./favicon.png\"><link rel=\"shortcut icon\" href=\"./favicon.ico\">'); document.open(); document.write(html); document.close(); }
         catch (e) { document.body.textContent = '책길 홈페이지를 불러오지 못했습니다. 잠시 후 다시 열어주세요.'; }
       }
     })();
   </script>
+<link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="shortcut icon" href="./favicon.ico">
 </head>
 <body><p style="font:16px sans-serif;padding:2rem">책길 홈페이지를 불러오는 중…</p></body>
 </html>
